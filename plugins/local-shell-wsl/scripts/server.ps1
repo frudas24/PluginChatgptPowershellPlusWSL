@@ -132,9 +132,9 @@ function Invoke-LocalProcess {
 function Invoke-WslBash {
     param([string]$Script, [int]$TimeoutSeconds = 30)
     $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Script))
-    # timeout also constrains the Linux-side bash if wsl.exe outlives its Windows parent.
-    $bootstrap = "printf '%s' '$encoded' | base64 -d | timeout --signal=TERM --kill-after=5s $TimeoutSeconds bash"
-    return Invoke-LocalProcess "wsl.exe" "-- bash -lc `"$bootstrap`"" $null ($TimeoutSeconds + 6)
+    # Keep the WSL launch shape compatible with the previously working plugin.
+    $bootstrap = "echo $encoded | base64 -d | bash"
+    return Invoke-LocalProcess "wsl.exe" "-- bash -lc `"$bootstrap`"" $null $TimeoutSeconds
 }
 
 function Assert-NoWindowsReparsePoints {
@@ -358,7 +358,7 @@ try {
                     Send-JsonRpcResult $request.id ([ordered]@{
                         protocolVersion = "2025-03-26"
                         capabilities = [ordered]@{ tools = [ordered]@{} }
-                        serverInfo = [ordered]@{ name = "local-shell-wsl"; version = "0.2.2" }
+                        serverInfo = [ordered]@{ name = "local-shell-wsl"; version = "0.2.3" }
                     })
                 }
                 "notifications/initialized" {}

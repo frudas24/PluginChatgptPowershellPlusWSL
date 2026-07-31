@@ -28,7 +28,7 @@ Restart Codex and begin a new task after enabling or updating the plugin.
 
 ## Security
 
-The server blocks common destructive patterns, limits retained output to 120 KB per stream, and uses `taskkill /T` plus Linux `timeout` to stop timed-out commands. Managed cleanup does not accept arbitrary paths: only handles created by the current instance are accepted, the canonical path is validated, and links or mount points are rejected. Graceful server shutdown cleans active managed temps; a crash can still leave a temp behind. This is a preventive barrier, not full isolation: any local terminal carries risk. Always review the execution request that Codex displays.
+The server blocks common destructive patterns, limits retained output to 120 KB per stream, and uses `taskkill /T` to stop timed-out Windows process trees. Managed cleanup does not accept arbitrary paths: only handles created by the current instance are accepted, the canonical path is validated, and links or mount points are rejected. Graceful server shutdown cleans active managed temps; a crash can still leave a temp behind. This is a preventive barrier, not full isolation: any local terminal carries risk. Always review the execution request that Codex displays.
 
 ## Requirements
 

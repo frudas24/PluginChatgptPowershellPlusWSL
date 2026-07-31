@@ -1,0 +1,33 @@
+{
+  "name": "local-shell-wsl",
+  "version": "0.2.0+codex.20260731141601",
+  "description": "Run controlled local PowerShell and WSL commands from Codex.",
+  "author": {
+    "name": "PluginChatgptPowershellPlusWSL",
+    "url": "https://github.com/frudas24"
+  },
+  "homepage": "https://github.com/frudas24/PluginChatgptPowershellPlusWSL",
+  "repository": "https://github.com/frudas24/PluginChatgptPowershellPlusWSL",
+  "license": "MIT",
+  "keywords": ["powershell", "wsl", "local-shell", "mcp"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "PowerShell + WSL local",
+    "shortDescription": "Run controlled local commands.",
+    "longDescription": "Connects Codex to PowerShell and WSL via a local MCP server, with timeouts, output limits, destructive-command blocking, and managed temp directories.",
+    "developerName": "PluginChatgptPowershellPlusWSL",
+    "category": "Developer",
+    "websiteURL": "https://github.com/frudas24/PluginChatgptPowershellPlusWSL",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Check my local environment with PowerShell.",
+      "Run this diagnostic inside WSL.",
+      "List the installed WSL distributions."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

@@ -1,9 +1,12 @@
 # PowerShell + WSL local para Codex
 
-Plugin local que expone dos herramientas MCP:
+Plugin local que expone cinco herramientas MCP:
 
 - `run_powershell`: ejecuta Windows PowerShell.
 - `run_wsl`: ejecuta Bash en la distribución WSL predeterminada.
+- `create_managed_temp`: crea un temporal administrado en Windows o WSL.
+- `list_managed_temps`: muestra temporales activos de la instancia.
+- `cleanup_managed_temp`: limpia un temporal mediante su identificador opaco.
 
 ## Instalación
 
@@ -17,7 +20,7 @@ El instalador copia la CLI a una carpeta normal bajo `%LOCALAPPDATA%`, registra 
 
 ## Seguridad
 
-El servidor bloquea patrones destructivos comunes, limita cada ejecución a 120 segundos y trunca salidas excesivas. Es una barrera preventiva, no un aislamiento completo: cualquier terminal local implica riesgo. Revisa siempre la solicitud de ejecución que muestra Codex.
+El servidor bloquea patrones destructivos comunes, limita cada ejecución a 120 segundos y trunca salidas excesivas. La limpieza administrada no acepta rutas arbitrarias: sólo identificadores creados por la instancia, valida la ruta canónica y rechaza enlaces o puntos de montaje. Es una barrera preventiva, no un aislamiento completo: cualquier terminal local implica riesgo. Revisa siempre la solicitud de ejecución que muestra Codex.
 
 ## Requisitos
 

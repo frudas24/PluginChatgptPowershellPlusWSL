@@ -1,6 +1,6 @@
 {
   "name": "local-shell-wsl",
-  "version": "0.1.0",
+  "version": "0.2.0+codex.20260731141601",
   "description": "Run controlled local PowerShell and WSL commands from Codex.",
   "author": {
     "name": "Local developer"
@@ -9,13 +9,17 @@
   "interface": {
     "displayName": "PowerShell + WSL local",
     "shortDescription": "Ejecuta comandos locales controlados.",
-    "longDescription": "Conecta Codex con PowerShell y WSL mediante un servidor MCP local, con tiempo máximo, límites de salida y bloqueo de comandos destructivos.",
+    "longDescription": "Conecta Codex con PowerShell y WSL mediante un servidor MCP local, con tiempo m\u00e1ximo, l\u00edmites de salida, bloqueo de comandos destructivos y temporales administrados.",
     "developerName": "Local developer",
     "category": "Developer",
-    "capabilities": ["Interactive", "Read"],
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
     "defaultPrompt": [
       "Revisa mi entorno local con PowerShell.",
-      "Ejecuta este diagnóstico dentro de WSL.",
+      "Ejecuta este diagn\u00f3stico dentro de WSL.",
       "Comprueba las distribuciones WSL instaladas."
     ]
   },

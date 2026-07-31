@@ -3,15 +3,21 @@
   "version": "0.2.0+codex.20260731141601",
   "description": "Run controlled local PowerShell and WSL commands from Codex.",
   "author": {
-    "name": "Local developer"
+    "name": "FRudas",
+    "url": "https://github.com/frudas24"
   },
+  "homepage": "https://github.com/frudas24/PluginChatgptPowershellPlusWSL",
+  "repository": "https://github.com/frudas24/PluginChatgptPowershellPlusWSL",
+  "license": "MIT",
+  "keywords": ["powershell", "wsl", "local-shell", "mcp"],
   "skills": "./skills/",
   "interface": {
     "displayName": "PowerShell + WSL local",
     "shortDescription": "Ejecuta comandos locales controlados.",
     "longDescription": "Conecta Codex con PowerShell y WSL mediante un servidor MCP local, con tiempo m\u00e1ximo, l\u00edmites de salida, bloqueo de comandos destructivos y temporales administrados.",
-    "developerName": "Local developer",
+    "developerName": "FRudas",
     "category": "Developer",
+    "websiteURL": "https://github.com/frudas24/PluginChatgptPowershellPlusWSL",
     "capabilities": [
       "Interactive",
       "Read",

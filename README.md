@@ -10,18 +10,18 @@ Local plugin that exposes five MCP tools:
 
 ## Installation
 
-Install directly from GitHub with Codex CLI:
+Install the Windows-native copy with PowerShell. This preserves WSL access in ChatGPT Work by generating an absolute local server path:
 
 ```powershell
-codex plugin marketplace add frudas24/PluginChatgptPowershellPlusWSL --ref main
-codex plugin add local-shell-wsl@frudas24
+& ([scriptblock]::Create((Invoke-RestMethod https://raw.githubusercontent.com/frudas24/PluginChatgptPowershellPlusWSL/main/scripts/install.ps1)))
 ```
 
-After publishing an update to `main`, refresh and reinstall it:
+The installer requires Git for Windows and Codex CLI. It installs the repository under `%LOCALAPPDATA%\Frudas24\PluginChatgptPowershellPlusWSL`, refreshes it from `main` on subsequent runs, and registers it as the local `frudas24` marketplace.
+
+After publishing an update to `main`, rerun the same command:
 
 ```powershell
-codex plugin marketplace upgrade frudas24
-codex plugin add local-shell-wsl@frudas24
+& ([scriptblock]::Create((Invoke-RestMethod https://raw.githubusercontent.com/frudas24/PluginChatgptPowershellPlusWSL/main/scripts/install.ps1)))
 ```
 
 Restart Codex and begin a new task after enabling or updating the plugin.

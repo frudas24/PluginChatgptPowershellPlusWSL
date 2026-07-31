@@ -358,7 +358,7 @@ try {
                     Send-JsonRpcResult $request.id ([ordered]@{
                         protocolVersion = "2025-03-26"
                         capabilities = [ordered]@{ tools = [ordered]@{} }
-                        serverInfo = [ordered]@{ name = "local-shell-wsl"; version = "0.2.3" }
+                        serverInfo = [ordered]@{ name = "local-shell-wsl"; version = "0.2.4" }
                     })
                 }
                 "notifications/initialized" {}

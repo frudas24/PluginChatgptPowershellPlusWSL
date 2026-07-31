@@ -1,4 +1,5 @@
 $serverPath = Join-Path $PSScriptRoot "..\plugins\local-shell-wsl\scripts\server.ps1"
+$installerPath = Join-Path $PSScriptRoot "..\scripts\install.ps1"
 $pluginPath = Join-Path $PSScriptRoot "..\plugins\local-shell-wsl\.codex-plugin\plugin.json"
 $marketplacePath = Join-Path $PSScriptRoot "..\.agents\plugins\marketplace.json"
 
@@ -7,6 +8,11 @@ Describe "local-shell-wsl server" {
         $tokens = $null
         $errors = $null
         [void][System.Management.Automation.Language.Parser]::ParseFile($serverPath, [ref]$tokens, [ref]$errors)
+        $errors.Count | Should Be 0
+
+        $tokens = $null
+        $errors = $null
+        [void][System.Management.Automation.Language.Parser]::ParseFile($installerPath, [ref]$tokens, [ref]$errors)
         $errors.Count | Should Be 0
     }
 
@@ -24,7 +30,7 @@ Describe "local-shell-wsl server" {
     It "uses the GitHub marketplace identity and current plugin version" {
         $plugin = Get-Content -LiteralPath $pluginPath -Raw | ConvertFrom-Json
         $marketplace = Get-Content -LiteralPath $marketplacePath -Raw | ConvertFrom-Json
-        $plugin.version | Should Be "0.2.3"
+        $plugin.version | Should Be "0.2.4"
         $marketplace.name | Should Be "frudas24"
     }
 }

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "local-shell": {
+      "command": "powershell.exe",
+      "args": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\FRudas\\Documents\\Codex\\2026-07-23\\qu\\outputs\\local-shell-marketplace\\plugins\\local-shell-wsl\\scripts\\server.ps1"
+      ]
+    }
+  }
+}

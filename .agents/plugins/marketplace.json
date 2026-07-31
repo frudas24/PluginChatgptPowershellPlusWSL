@@ -1,7 +1,7 @@
 {
-  "name": "personal",
+  "name": "frudas24",
   "interface": {
-    "displayName": "Personal"
+    "displayName": "frudas24 plugins"
   },
   "plugins": [
     {

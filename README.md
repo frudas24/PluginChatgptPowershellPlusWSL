@@ -10,17 +10,25 @@ Local plugin that exposes five MCP tools:
 
 ## Installation
 
-The Microsoft Store app protects its internal copy of `codex.exe`. Run the included installer from PowerShell:
+Install directly from GitHub with Codex CLI:
 
 ```powershell
-& "<plugin-path>\scripts\install.ps1"
+codex plugin marketplace add frudas24/PluginChatgptPowershellPlusWSL --ref main
+codex plugin add local-shell-wsl@frudas24
 ```
 
-The installer copies the CLI to a normal folder under `%LOCALAPPDATA%`, registers the marketplace, and installs the plugin. After that, close Codex completely, reopen it, and create a new task.
+After publishing an update to `main`, refresh and reinstall it:
+
+```powershell
+codex plugin marketplace upgrade frudas24
+codex plugin add local-shell-wsl@frudas24
+```
+
+Restart Codex and begin a new task after enabling or updating the plugin.
 
 ## Security
 
-The server blocks common destructive patterns, caps each execution at 120 seconds, and truncates excessive output. Managed cleanup does not accept arbitrary paths: only handles created by the current instance are accepted, the canonical path is validated, and links or mount points are rejected. This is a preventive barrier, not full isolation: any local terminal carries risk. Always review the execution request that Codex displays.
+The server blocks common destructive patterns, limits retained output to 120 KB per stream, and uses `taskkill /T` plus Linux `timeout` to stop timed-out commands. Managed cleanup does not accept arbitrary paths: only handles created by the current instance are accepted, the canonical path is validated, and links or mount points are rejected. Graceful server shutdown cleans active managed temps; a crash can still leave a temp behind. This is a preventive barrier, not full isolation: any local terminal carries risk. Always review the execution request that Codex displays.
 
 ## Requirements
 

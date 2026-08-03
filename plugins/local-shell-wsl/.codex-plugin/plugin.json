@@ -1,6 +1,6 @@
 {
   "name": "local-shell-wsl",
-  "version": "0.2.0+codex.20260803054956",
+  "version": "0.2.1+codex.20260803070000",
   "description": "Run controlled local PowerShell and WSL commands from Codex.",
   "author": {
     "name": "FRudas",
@@ -33,5 +33,6 @@
       "Ejecuta este diagn\u00f3stico dentro de WSL.",
       "Comprueba las distribuciones WSL instaladas."
     ]
-  }
+  },
+  "mcpServers": "./.mcp.json"
 }

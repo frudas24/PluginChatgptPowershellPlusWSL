@@ -8,7 +8,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        ".\\plugins\\local-shell-wsl\\scripts\\server.ps1"
+        "__SERVER_SCRIPT__"
       ]
     }
   }

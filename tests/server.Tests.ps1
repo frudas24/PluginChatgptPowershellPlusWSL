@@ -35,7 +35,7 @@ Describe "local-shell-wsl server" {
     It "uses the personal marketplace identity and current plugin version" {
         $plugin = Get-Content -LiteralPath $pluginPath -Raw | ConvertFrom-Json
         $marketplace = Get-Content -LiteralPath $marketplacePath -Raw | ConvertFrom-Json
-        $plugin.version | Should Be "0.3.0"
+        $plugin.version | Should Be "0.3.1"
         $marketplace.name | Should Be "personal"
     }
 }

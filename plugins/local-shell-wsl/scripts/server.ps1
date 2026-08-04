@@ -132,9 +132,16 @@ function Invoke-LocalProcess {
 function Invoke-WslBash {
     param([string]$Script, [int]$TimeoutSeconds = 30)
     $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Script))
-    # Keep the WSL launch shape compatible with the previously working plugin.
     $bootstrap = "echo $encoded | base64 -d | bash"
-    return Invoke-LocalProcess "wsl.exe" "-- bash -lc `"$bootstrap`"" $null $TimeoutSeconds
+    $escapedBootstrap = $bootstrap.Replace("'", "''")
+
+    # WSL CreateInstance can reject a direct child of the long-running MCP
+    # host even though the same Windows identity succeeds through PowerShell.
+    # Launch it through a fresh PowerShell process, matching run_powershell's
+    # verified execution path while retaining the process-tree timeout.
+    $wrappedCommand = "& wsl.exe '--' 'bash' '-lc' '$escapedBootstrap'; exit `$LASTEXITCODE"
+    $powershellEncoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($wrappedCommand))
+    return Invoke-LocalProcess "powershell.exe" "-NoLogo -NoProfile -NonInteractive -EncodedCommand $powershellEncoded" $null $TimeoutSeconds
 }
 
 function Assert-NoWindowsReparsePoints {
@@ -358,7 +365,7 @@ try {
                     Send-JsonRpcResult $request.id ([ordered]@{
                         protocolVersion = "2025-03-26"
                         capabilities = [ordered]@{ tools = [ordered]@{} }
-                        serverInfo = [ordered]@{ name = "local-shell-wsl"; version = "0.3.0" }
+                        serverInfo = [ordered]@{ name = "local-shell-wsl"; version = "0.3.1" }
                     })
                 }
                 "notifications/initialized" {}

@@ -2,7 +2,8 @@
 param(
     [string]$RepoRoot,
     [string]$MarketplaceName = 'personal',
-    [string]$McpHostName = 'local-shell-host'
+    [string]$McpHostName = 'local-shell-host',
+    [switch]$ReplaceExistingHost
 )
 
 $ErrorActionPreference = 'Stop'
@@ -10,6 +11,11 @@ $ErrorActionPreference = 'Stop'
 # $PSScriptRoot is still empty while an advanced script binds parameter
 # defaults (PS 5.1 quirk), so it must be resolved in the body.
 if ([string]::IsNullOrWhiteSpace($RepoRoot)) { $RepoRoot = $PSScriptRoot }
+
+function Get-NormalizedPath {
+    param([string]$Path)
+    return [IO.Path]::GetFullPath($Path.Replace('\\?\', '')).TrimEnd('\\')
+}
 
 function Resolve-CodexCli {
     $command = Get-Command codex -ErrorAction SilentlyContinue
@@ -64,13 +70,18 @@ if ($LASTEXITCODE -ne 0) { throw 'Could not install local-shell-wsl.' }
 # and is the launch context where WSL works, so it is the supported shape.
 $mcpServers = & $cli mcp list --json | ConvertFrom-Json
 if ($LASTEXITCODE -ne 0) { throw 'Could not list configured MCP servers.' }
-$hostEntry = $mcpServers | Where-Object { $_.name -eq $McpHostName }
+$hostEntry = @($mcpServers | Where-Object { $_.name -eq $McpHostName }) | Select-Object -First 1
 $hostNeedsUpdate = $true
 if ($hostEntry) {
-    $registeredCommand = [string]$hostEntry.transport.command
-    $registeredArgs = [string](@($hostEntry.transport.args) -join ' ')
-    $hostNeedsUpdate = ($registeredCommand -ne 'powershell.exe') -or ($registeredArgs -notlike "*$serverScript*")
+    $registeredArgs = @($hostEntry.transport.args)
+    $hostMatchesCheckout = ([string]$hostEntry.transport.command -eq 'powershell.exe') -and
+        ($registeredArgs.Count -gt 0) -and
+        ((Get-NormalizedPath ([string]$registeredArgs[-1])) -eq (Get-NormalizedPath $serverScript))
+    $hostNeedsUpdate = -not $hostMatchesCheckout
     if ($hostNeedsUpdate) {
+        if (-not $ReplaceExistingHost) {
+            throw "MCP host '$McpHostName' already points to another checkout. Run the uninstaller there first, or rerun with -ReplaceExistingHost."
+        }
         & $cli mcp remove $McpHostName
         if ($LASTEXITCODE -ne 0) { throw "Could not remove the stale $McpHostName MCP host." }
     }

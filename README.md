@@ -1,6 +1,6 @@
 # PowerShell + WSL local for Codex
 
-Local plugin that exposes five MCP tools:
+Local plugin that bundles a skill and registers a global MCP host exposing five tools:
 
 - `run_powershell`: execute Windows PowerShell.
 - `run_wsl`: execute Bash in the default WSL distribution.
@@ -59,6 +59,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\uninstall-local-shell-
 It removes `local-shell-wsl@personal`, the global `local-shell-host` MCP
 server, and the `personal` marketplace only when each one points at that same
 checkout. It leaves the repository and the extracted Codex CLI in place.
+
+The installer refuses to replace a `local-shell-host` that points to another
+checkout. Uninstall that checkout first, or explicitly pass
+`-ReplaceExistingHost` when you intentionally want to replace it.
 
 ## Security
 

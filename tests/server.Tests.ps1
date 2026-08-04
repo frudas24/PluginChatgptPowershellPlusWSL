@@ -41,6 +41,7 @@ Describe "local-shell-wsl server" {
         $source = Get-Content -LiteralPath $localInstallerPath -Raw
         $source | Should Match 'mcp add'
         $source | Should Match 'local-shell-host'
+        $source | Should Match 'ReplaceExistingHost'
     }
 
     It "only removes matching MCP and marketplace registrations" {

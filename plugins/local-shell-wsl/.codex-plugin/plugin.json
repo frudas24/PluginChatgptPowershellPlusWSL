@@ -1,6 +1,6 @@
 {
   "name": "local-shell-wsl",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Run controlled local PowerShell and WSL commands from Codex.",
   "author": {
     "name": "PluginChatgptPowershellPlusWSL",
@@ -28,6 +28,5 @@
       "Run this diagnostic inside WSL.",
       "List the installed WSL distributions."
     ]
-  },
-  "mcpServers": "./.mcp.json"
+  }
 }

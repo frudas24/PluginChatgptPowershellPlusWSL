@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$RepoRoot,
-    [string]$MarketplaceName = 'personal'
+    [string]$MarketplaceName = 'personal',
+    [string]$McpHostName = 'local-shell-host'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -33,10 +34,8 @@ function Resolve-CodexCli {
 
 $pluginRoot = Join-Path $RepoRoot 'plugins\local-shell-wsl'
 $serverScript = Join-Path $pluginRoot 'scripts\server.ps1'
-$mcpTemplate = Join-Path $pluginRoot '.mcp.template.json'
-$mcpConfig = Join-Path $pluginRoot '.mcp.json'
 
-foreach ($path in @($pluginRoot, $serverScript, $mcpTemplate)) {
+foreach ($path in @($pluginRoot, $serverScript)) {
     if (-not (Test-Path -LiteralPath $path)) {
         throw "Incomplete install: $path was not found."
     }
@@ -44,13 +43,7 @@ foreach ($path in @($pluginRoot, $serverScript, $mcpTemplate)) {
 
 $cli = Resolve-CodexCli
 
-# The MCP manifest needs an absolute path; it is generated locally so the
-# repository can live in any folder on any machine.
-$template = Get-Content -LiteralPath $mcpTemplate -Raw
-$escapedServerScript = $serverScript.Replace('\', '\\')
-$template.Replace('__SERVER_SCRIPT__', $escapedServerScript) |
-    Set-Content -LiteralPath $mcpConfig -Encoding UTF8
-
+# Skill plugin through the local marketplace.
 $configured = (& $cli plugin marketplace list --json | ConvertFrom-Json).marketplaces
 if ($LASTEXITCODE -ne 0) { throw 'Could not list Codex marketplaces.' }
 $existing = $configured | Where-Object { $_.name -eq $MarketplaceName }
@@ -63,17 +56,29 @@ if ($existing) {
     if ($LASTEXITCODE -ne 0) { throw 'Could not register the local marketplace.' }
 }
 
-# The global host was an earlier experiment. The plugin is self-contained and
-# provides its own MCP through .mcp.json; leave no residual global config.
-$mcpServers = & $cli mcp list --json | ConvertFrom-Json
-if ($LASTEXITCODE -ne 0) { throw 'Could not list configured MCP servers.' }
-if (@($mcpServers | Where-Object { $_.name -eq 'local-shell-host' }).Count -gt 0) {
-    & $cli mcp remove local-shell-host
-    if ($LASTEXITCODE -ne 0) { throw 'Could not remove the previous global MCP host.' }
-}
-
 & $cli plugin add "local-shell-wsl@$MarketplaceName"
 if ($LASTEXITCODE -ne 0) { throw 'Could not install local-shell-wsl.' }
+
+# The plugin-embedded MCP gets E_ACCESSDENIED from WSL CreateInstance when the
+# desktop app launches it. The global MCP host runs with tool approval prompts
+# and is the launch context where WSL works, so it is the supported shape.
+$mcpServers = & $cli mcp list --json | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) { throw 'Could not list configured MCP servers.' }
+$hostEntry = $mcpServers | Where-Object { $_.name -eq $McpHostName }
+$hostNeedsUpdate = $true
+if ($hostEntry) {
+    $registeredCommand = [string]$hostEntry.transport.command
+    $registeredArgs = [string](@($hostEntry.transport.args) -join ' ')
+    $hostNeedsUpdate = ($registeredCommand -ne 'powershell.exe') -or ($registeredArgs -notlike "*$serverScript*")
+    if ($hostNeedsUpdate) {
+        & $cli mcp remove $McpHostName
+        if ($LASTEXITCODE -ne 0) { throw "Could not remove the stale $McpHostName MCP host." }
+    }
+}
+if ($hostNeedsUpdate) {
+    & $cli mcp add $McpHostName -- powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $serverScript
+    if ($LASTEXITCODE -ne 0) { throw "Could not register the $McpHostName MCP host." }
+}
 
 & $cli plugin list
 if ($LASTEXITCODE -ne 0) { throw 'Could not verify the installation.' }

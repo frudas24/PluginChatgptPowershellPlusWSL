@@ -11,10 +11,14 @@ Local plugin that exposes five MCP tools:
 ## Installation
 
 Both modes run the same installation logic. The installer registers the
-checkout as the local `personal` marketplace, generates `.mcp.json` from
-`.mcp.template.json` with the absolute local server path (the launch mode
-that allows WSL from ChatGPT for Windows), installs `local-shell-wsl@personal`,
-and removes the legacy global `local-shell-host` MCP entry if it exists.
+checkout as the local `personal` marketplace, installs the `local-shell-wsl`
+skill plugin, and registers the MCP server as the **global** `local-shell-host`
+MCP host.
+
+The global host is deliberate: when the desktop app launches an MCP server
+embedded in a plugin, WSL refuses to create instances (`E_ACCESSDENIED` on
+`CreateInstance`). The global host runs with the usual tool-approval prompts
+("once" / "in this chat session") and is the launch context where WSL works.
 
 If `codex` is not on the `PATH`, the installer extracts a runnable CLI copy
 from the OpenAI Codex Microsoft Store app.

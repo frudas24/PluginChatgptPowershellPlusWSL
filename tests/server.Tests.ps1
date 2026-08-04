@@ -3,7 +3,6 @@ $remoteInstallerPath = Join-Path $PSScriptRoot "..\scripts\install.ps1"
 $localInstallerPath = Join-Path $PSScriptRoot "..\install-local-shell-wsl.ps1"
 $pluginPath = Join-Path $PSScriptRoot "..\plugins\local-shell-wsl\.codex-plugin\plugin.json"
 $marketplacePath = Join-Path $PSScriptRoot "..\.agents\plugins\marketplace.json"
-$mcpTemplatePath = Join-Path $PSScriptRoot "..\plugins\local-shell-wsl\.mcp.template.json"
 
 Describe "local-shell-wsl server" {
     It "has valid PowerShell syntax" {
@@ -21,21 +20,32 @@ Describe "local-shell-wsl server" {
         $source | Should Match 'taskkill\.exe'
     }
 
+    It "launches WSL through a PowerShell child" {
+        $source = Get-Content -LiteralPath $serverPath -Raw
+        $source | Should Match "wsl\.exe '--' 'bash' '-lc'"
+        $source | Should Not Match 'Invoke-LocalProcess "wsl\.exe"'
+    }
+
     It "has valid marketplace metadata" {
         { Get-Content -LiteralPath $pluginPath -Raw | ConvertFrom-Json } | Should Not Throw
         { Get-Content -LiteralPath $marketplacePath -Raw | ConvertFrom-Json } | Should Not Throw
-        { Get-Content -LiteralPath $mcpTemplatePath -Raw | ConvertFrom-Json } | Should Not Throw
     }
 
-    It "keeps the MCP template on the generated placeholder" {
-        $template = Get-Content -LiteralPath $mcpTemplatePath -Raw
-        $template | Should Match '__SERVER_SCRIPT__'
+    It "does not embed an MCP server in the plugin" {
+        $plugin = Get-Content -LiteralPath $pluginPath -Raw | ConvertFrom-Json
+        $plugin.PSObject.Properties.Name | Should Not Contain 'mcpServers'
+    }
+
+    It "registers the global MCP host from the installer" {
+        $source = Get-Content -LiteralPath $localInstallerPath -Raw
+        $source | Should Match 'mcp add'
+        $source | Should Match 'local-shell-host'
     }
 
     It "uses the personal marketplace identity and current plugin version" {
         $plugin = Get-Content -LiteralPath $pluginPath -Raw | ConvertFrom-Json
         $marketplace = Get-Content -LiteralPath $marketplacePath -Raw | ConvertFrom-Json
-        $plugin.version | Should Be "0.3.1"
+        $plugin.version | Should Be "0.3.2"
         $marketplace.name | Should Be "personal"
     }
 }

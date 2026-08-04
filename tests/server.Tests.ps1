@@ -1,12 +1,13 @@
 $serverPath = Join-Path $PSScriptRoot "..\plugins\local-shell-wsl\scripts\server.ps1"
 $remoteInstallerPath = Join-Path $PSScriptRoot "..\scripts\install.ps1"
 $localInstallerPath = Join-Path $PSScriptRoot "..\install-local-shell-wsl.ps1"
+$uninstallerPath = Join-Path $PSScriptRoot "..\uninstall-local-shell-wsl.ps1"
 $pluginPath = Join-Path $PSScriptRoot "..\plugins\local-shell-wsl\.codex-plugin\plugin.json"
 $marketplacePath = Join-Path $PSScriptRoot "..\.agents\plugins\marketplace.json"
 
 Describe "local-shell-wsl server" {
     It "has valid PowerShell syntax" {
-        foreach ($scriptPath in @($serverPath, $remoteInstallerPath, $localInstallerPath)) {
+        foreach ($scriptPath in @($serverPath, $remoteInstallerPath, $localInstallerPath, $uninstallerPath)) {
             $tokens = $null
             $errors = $null
             [void][System.Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$tokens, [ref]$errors)
@@ -33,13 +34,20 @@ Describe "local-shell-wsl server" {
 
     It "does not embed an MCP server in the plugin" {
         $plugin = Get-Content -LiteralPath $pluginPath -Raw | ConvertFrom-Json
-        $plugin.PSObject.Properties.Name | Should Not Contain 'mcpServers'
+        ($plugin.PSObject.Properties.Name -join ',') | Should Not Match '(^|,)mcpServers(,|$)'
     }
 
     It "registers the global MCP host from the installer" {
         $source = Get-Content -LiteralPath $localInstallerPath -Raw
         $source | Should Match 'mcp add'
         $source | Should Match 'local-shell-host'
+    }
+
+    It "only removes matching MCP and marketplace registrations" {
+        $source = Get-Content -LiteralPath $uninstallerPath -Raw
+        $source | Should Match 'MCP host .*points to another checkout'
+        $source | Should Match 'Marketplace .*points to another checkout'
+        $source | Should Match 'Get-NormalizedPath'
     }
 
     It "uses the personal marketplace identity and current plugin version" {

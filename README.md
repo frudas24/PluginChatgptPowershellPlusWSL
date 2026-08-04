@@ -48,6 +48,18 @@ then runs the same local installer from that checkout:
 Rerun the same command you used to install. Then fully close Codex, reopen
 it, and start or fork a conversation before invoking `@local-shell-wsl`.
 
+### Uninstalling
+
+Run the uninstaller from the same repository checkout used for installation:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\uninstall-local-shell-wsl.ps1
+```
+
+It removes `local-shell-wsl@personal`, the global `local-shell-host` MCP
+server, and the `personal` marketplace only when each one points at that same
+checkout. It leaves the repository and the extracted Codex CLI in place.
+
 ## Security
 
 The server blocks common destructive patterns, limits retained output to

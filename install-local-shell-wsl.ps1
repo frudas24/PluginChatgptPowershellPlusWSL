@@ -1,10 +1,14 @@
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = $PSScriptRoot,
+    [string]$RepoRoot,
     [string]$MarketplaceName = 'personal'
 )
 
 $ErrorActionPreference = 'Stop'
+
+# $PSScriptRoot is still empty while an advanced script binds parameter
+# defaults (PS 5.1 quirk), so it must be resolved in the body.
+if ([string]::IsNullOrWhiteSpace($RepoRoot)) { $RepoRoot = $PSScriptRoot }
 
 function Resolve-CodexCli {
     $command = Get-Command codex -ErrorAction SilentlyContinue
